@@ -155,7 +155,7 @@ export const MetricsDonut: React.FC<MetricsDonutProps> = ({
     const displayName = text || datum?.name || '';
     const fullName = datum?.fullName || displayName;
     const formattedValue = datum?.formattedValue || '';
-    const tooltipContent = `${fullName}: ${formattedValue}`;
+    const tooltipContent = t('{{name}}: {{value}}', { name: fullName, value: formattedValue });
 
     // Only show tooltip if the displayed name is truncated (different from full name)
     const isTruncated = displayName !== fullName;
