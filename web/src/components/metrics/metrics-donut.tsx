@@ -130,42 +130,9 @@ export const MetricsDonut: React.FC<MetricsDonutProps> = ({
   // Narrow panels (half-width): use more balanced padding to center donut+legend
   const isNarrowPanel = dimensions.width <= 800;
 
-  // Truncate text with end ellipsis, preserving arrow structure
-  const truncateEnd = (text: string, maxLength: number): string => {
-    if (text.length <= maxLength) {
-      return text;
-    }
-    return text.substring(0, maxLength - 1) + '…';
-  };
-
-  // Truncate both sides of arrow separately for better readability
-  const truncateArrowFormat = (text: string, maxLength: number): string => {
-    // Check if text contains arrow notation
-    const arrowMatch = text.match(/^(.+?)\s*(->|→)\s*(.+)$/);
-    if (arrowMatch) {
-      const [, source, arrow, destination] = arrowMatch;
-      // Split available length between source and destination (accounting for arrow)
-      const arrowLength = arrow.length + 2; // " -> " or " → "
-      const sideLength = Math.floor((maxLength - arrowLength) / 2);
-
-      return `${truncateEnd(source, sideLength)} ${arrow} ${truncateEnd(destination, sideLength)}`;
-    }
-    // No arrow, just truncate normally
-    return truncateEnd(text, maxLength);
-  };
-
-  // Create extra-short names for narrow panels to prevent cutoff
-  const createDisplayName = (shortName: string, fullName: string): string => {
-    if (!isNarrowPanel) {
-      return fullName;
-    }
-    // For narrow panels, aggressively truncate to max 30 characters
-    return truncateArrowFormat(shortName, 30);
-  };
-
   const legendData = sliced.map((m, idx) => ({
     childName: `${'area-'}${idx}`,
-    name: createDisplayName(m.shortName, m.fullName),
+    name: m.fullName,
     fullName: m.fullName,
     formattedValue: getFormattedValue(m.value, metricType, metricFunction, t)
   }));
