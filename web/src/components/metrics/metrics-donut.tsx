@@ -125,11 +125,6 @@ export const MetricsDonut: React.FC<MetricsDonutProps> = ({
   // Hide legend on small screens to prevent overlap/cropping
   const showLegendResponsive = showLegend && dimensions.width >= 550;
 
-  // Use adaptive padding based on panel width
-  // Wide panels (full-width): use original asymmetric padding
-  // Narrow panels (half-width): use more balanced padding to center donut+legend
-  const isNarrowPanel = dimensions.width <= 800;
-
   const legendData = sliced.map((m, idx) => ({
     childName: `${'area-'}${idx}`,
     name: m.fullName,
@@ -142,26 +137,11 @@ export const MetricsDonut: React.FC<MetricsDonutProps> = ({
   ) : (
     <ChartLegend data={legendData} />
   );
+
+  // Use consistent padding that works for all panel widths
   const legendPadding = showLegendResponsive
-    ? isNarrowPanel
-      ? {
-          bottom: 20,
-          left: 100,
-          right: 250,
-          top: 20
-        }
-      : {
-          bottom: 20,
-          left: 20,
-          right: 350,
-          top: 20
-        }
-    : {
-        bottom: 0,
-        left: 0,
-        right: 0,
-        top: 0
-      };
+    ? { bottom: 20, left: 20, right: 300, top: 20 }
+    : { bottom: 0, left: 0, right: 0, top: 0 };
 
   return (
     <div id={id} className="metrics-content-div" ref={containerRef} data-test-metrics={topKMetrics.length}>
