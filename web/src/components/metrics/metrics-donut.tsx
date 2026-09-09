@@ -137,38 +137,11 @@ export const MetricsDonut: React.FC<MetricsDonutProps> = ({
     formattedValue: getFormattedValue(m.value, metricType, metricFunction, t)
   }));
 
-  // Custom label component with SVG title tooltip for truncated legend items
-  interface LegendLabelData {
-    name?: string;
-    fullName?: string;
-    formattedValue?: string;
-  }
-
-  interface LegendLabelProps {
-    datum?: LegendLabelData;
-    text?: string;
-    [key: string]: unknown;
-  }
-
-  const TooltipLabel = (props: LegendLabelProps) => {
-    const { datum, text, ...rest } = props;
-    const displayName = text || datum?.name || '';
-    const fullName = datum?.fullName || displayName;
-    const formattedValue = datum?.formattedValue || '';
-    const tooltipContent = t('{{name}}: {{value}}', { name: fullName, value: formattedValue });
-
-    // Only show tooltip if the displayed name is truncated (different from full name)
-    const isTruncated = displayName !== fullName;
-
-    return (
-      <g>
-        <ChartLabel {...rest} text={text} className={smallerTexts ? 'small-chart-label' : ''} />
-        {isTruncated && <title>{tooltipContent}</title>}
-      </g>
-    );
-  };
-
-  const legendComponent = <ChartLegend labelComponent={<TooltipLabel />} data={legendData} />;
+  const legendComponent = smallerTexts ? (
+    <ChartLegend labelComponent={<ChartLabel className="small-chart-label" />} data={legendData} />
+  ) : (
+    <ChartLegend data={legendData} />
+  );
   const legendPadding = showLegendResponsive
     ? isNarrowPanel
       ? {
