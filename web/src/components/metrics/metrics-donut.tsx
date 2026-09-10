@@ -1,4 +1,4 @@
-import { ChartDonut, ChartLabel, ChartLegend, ChartThemeColor } from '@patternfly/react-charts/victory';
+import { ChartDonut, ChartLabel, ChartLegend, ChartThemeColor, ChartTooltip } from '@patternfly/react-charts/victory';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { GenericMetric, MetricStats, NamedMetric } from '../../api/query-response';
@@ -155,11 +155,22 @@ export const MetricsDonut: React.FC<MetricsDonutProps> = ({
     formattedValue: getFormattedValue(m.value, metricType, metricFunction, t)
   }));
 
-  const legendComponent = smallerTexts ? (
-    <ChartLegend labelComponent={<ChartLabel className="small-chart-label" />} data={legendData} />
-  ) : (
-    <ChartLegend data={legendData} />
-  );
+  // Custom label component with tooltip showing full name and value
+  const LegendLabelWithTooltip = (props: { datum?: { fullName?: string; formattedValue?: string } }) => {
+    const { datum } = props;
+    const tooltipText = datum?.fullName ? `${datum.fullName}: ${datum.formattedValue}` : undefined;
+
+    return (
+      <ChartTooltip
+        {...props}
+        text={tooltipText}
+        flyoutComponent={tooltipText ? undefined : <></>}
+        labelComponent={<ChartLabel className={smallerTexts ? 'small-chart-label' : ''} />}
+      />
+    );
+  };
+
+  const legendComponent = <ChartLegend labelComponent={<LegendLabelWithTooltip />} data={legendData} />;
 
   // Use consistent padding that works for all panel widths
   const legendPadding = showLegendResponsive
