@@ -125,10 +125,33 @@ export const MetricsDonut: React.FC<MetricsDonutProps> = ({
   // Hide legend on small screens to prevent overlap/cropping
   const showLegendResponsive = showLegend && dimensions.width >= 550;
 
+  // Helper to truncate text with ellipsis
+  const truncateText = (text: string, maxLength: number): string => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength - 1) + '…';
+  };
+
+  // Format legend names with truncation for arrow notation
+  const formatLegendName = (fullName: string, maxLength: number = 45): string => {
+    if (fullName.length <= maxLength) return fullName;
+
+    // Check if text contains arrow notation (src -> dst or src → dst)
+    const arrowMatch = fullName.match(/^(.+?)\s*(->|→)\s*(.+)$/);
+    if (arrowMatch) {
+      const [, source, arrow, destination] = arrowMatch;
+      const arrowLen = arrow.length + 2; // " -> " or " → "
+      const sideLen = Math.floor((maxLength - arrowLen) / 2);
+      return `${truncateText(source, sideLen)} ${arrow} ${truncateText(destination, sideLen)}`;
+    }
+
+    // No arrow, simple truncation
+    return truncateText(fullName, maxLength);
+  };
+
   const legendData = sliced.map((m, idx) => ({
     childName: `${'area-'}${idx}`,
-    name: m.fullName,
-    fullName: m.fullName,
+    name: formatLegendName(m.fullName),  // Truncated for legend
+    fullName: m.fullName,                 // Full name for tooltip
     formattedValue: getFormattedValue(m.value, metricType, metricFunction, t)
   }));
 
