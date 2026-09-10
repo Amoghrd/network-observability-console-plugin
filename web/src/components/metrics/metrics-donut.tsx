@@ -156,7 +156,10 @@ export const MetricsDonut: React.FC<MetricsDonutProps> = ({
   }));
 
   // Custom label component with SVG title tooltip showing full name and value
-  const TooltipLabel = (props: { datum?: { fullName?: string; formattedValue?: string; name?: string }; text?: string }) => {
+  const TooltipLabel = (props: {
+    datum?: { fullName?: string; formattedValue?: string; name?: string };
+    text?: string;
+  }) => {
     const { datum, text, ...rest } = props;
     const displayName = text || datum?.name || '';
     const fullName = datum?.fullName || displayName;
