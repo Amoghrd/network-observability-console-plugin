@@ -1,4 +1,4 @@
-import { ChartDonut, ChartLabel, ChartLegend, ChartThemeColor, ChartTooltip } from '@patternfly/react-charts/victory';
+import { ChartDonut, ChartLabel, ChartLegend, ChartThemeColor } from '@patternfly/react-charts/victory';
 import * as React from 'react';
 import { useTranslation } from 'react-i18next';
 import { GenericMetric, MetricStats, NamedMetric } from '../../api/query-response';
@@ -155,22 +155,26 @@ export const MetricsDonut: React.FC<MetricsDonutProps> = ({
     formattedValue: getFormattedValue(m.value, metricType, metricFunction, t)
   }));
 
-  // Custom label component with tooltip showing full name and value
-  const LegendLabelWithTooltip = (props: { datum?: { fullName?: string; formattedValue?: string } }) => {
-    const { datum } = props;
-    const tooltipText = datum?.fullName ? `${datum.fullName}: ${datum.formattedValue}` : undefined;
+  // Custom label component with SVG title tooltip showing full name and value
+  const TooltipLabel = (props: { datum?: { fullName?: string; formattedValue?: string; name?: string }; text?: string }) => {
+    const { datum, text, ...rest } = props;
+    const displayName = text || datum?.name || '';
+    const fullName = datum?.fullName || displayName;
+    const formattedValue = datum?.formattedValue || '';
+    const tooltipContent = t('{{name}}: {{value}}', { name: fullName, value: formattedValue });
+
+    // Only show tooltip if the displayed name is truncated (different from full name)
+    const isTruncated = displayName !== fullName;
 
     return (
-      <ChartTooltip
-        {...props}
-        text={tooltipText}
-        flyoutComponent={tooltipText ? undefined : <></>}
-        labelComponent={<ChartLabel className={smallerTexts ? 'small-chart-label' : ''} />}
-      />
+      <g>
+        <ChartLabel {...rest} text={text} className={smallerTexts ? 'small-chart-label' : ''} />
+        {isTruncated && <title>{tooltipContent}</title>}
+      </g>
     );
   };
 
-  const legendComponent = <ChartLegend labelComponent={<LegendLabelWithTooltip />} data={legendData} />;
+  const legendComponent = <ChartLegend labelComponent={<TooltipLabel />} data={legendData} />;
 
   // Use consistent padding that works for all panel widths
   const legendPadding = showLegendResponsive
