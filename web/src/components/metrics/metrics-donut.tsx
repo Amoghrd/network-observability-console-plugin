@@ -150,8 +150,8 @@ export const MetricsDonut: React.FC<MetricsDonutProps> = ({
 
   const legendData = sliced.map((m, idx) => ({
     childName: `${'area-'}${idx}`,
-    name: formatLegendName(m.fullName),  // Truncated for legend
-    fullName: m.fullName,                 // Full name for tooltip
+    name: formatLegendName(m.fullName), // Truncated for legend
+    fullName: m.fullName, // Full name for tooltip
     formattedValue: getFormattedValue(m.value, metricType, metricFunction, t)
   }));
 
